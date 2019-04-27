@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -8,8 +7,6 @@ using UnityEngine;
 
 public class Server
 {
-    public const byte SERVER_ID = 254;
-
     private Dictionary<byte, ServerClient> _clientListById;
     private bool _needsToStop = false;
     private bool _isRunning = false;
