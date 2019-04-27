@@ -31,7 +31,7 @@ public class NetworkPacket
 
     public NetworkPacket Add(Vector3 v)
     {
-        return this.Add(v.x).Add(v.y).Add(v.z);
+        return Add(v.x).Add(v.y).Add(v.z);
     }
 
     public NetworkPacket Add(float f)
@@ -42,16 +42,17 @@ public class NetworkPacket
             throw new Exception("Paquet would be aboce max allowed size :" + newLength + "/" + MAX_SIZE);
         }
         byte[] buffer = BitConverter.GetBytes(f);
-        addData(buffer);
-        return this;
+        
+        return Add(buffer); ;
     }
 
-    private void addData(byte[] data)
+    private NetworkPacket Add(byte[] data)
     {
         ushort newLength = (ushort)(_actualLength + data.Length);
         Array.Resize(ref _data, _actualLength + data.Length);
         Buffer.BlockCopy(data, 0, _data, _actualLength, data.Length);
         _actualLength = newLength;
+        return this;
     }
 
     public byte[] GetBytes()

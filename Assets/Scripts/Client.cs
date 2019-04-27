@@ -52,7 +52,7 @@ public class Client
                 ushort packetLength = BitConverter.ToUInt16(headerBuffer, 2);
                 dataBuffer = new byte[packetLength - NetworkPacket.HEADER_SIZE];
                 networkStream.Read(dataBuffer, 0, packetLength - NetworkPacket.HEADER_SIZE);
-                Debug.Log("[CLIENTTHREAD] The packet is : " + dataBuffer.ToString());
+                Debug.Log("[CLIENTTHREAD] The packet payload is : " + dataBuffer.ToString() + " (" + dataBuffer.Length + ")");
             }
 
             if (networkStream.CanWrite && packetsQueue.Count > 0)
@@ -90,7 +90,7 @@ public class Client
         packetsQueue.Enqueue(NetworkPacketFactory.CreateTestPacket(69, 0f));
     }
 
-    public void SendMovePacket(Vector3 pos,Vector3 rot)
+    public void SendMovePacket(Vector3 pos, Vector3 rot)
     {
         packetsQueue.Enqueue(NetworkPacketFactory.CreateMovePacket(69, pos, rot));
     }

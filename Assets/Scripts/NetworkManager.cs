@@ -41,12 +41,19 @@ public class NetworkManager : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.N))
+        if (Input.GetKeyDown(KeyCode.T))
         {
-            if (_server.IsRunning() && _client.IsConnected())
+            if (_client.IsConnected())
             {
-                //_client.SendMovePacket(character.transform.position);
                 _client.SendNetworkTestMessage();
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            if (_client.IsConnected())
+            {
+                _client.SendMovePacket(character.transform.position, character.transform.rotation.eulerAngles);
             }
         }
     }
