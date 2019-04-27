@@ -21,11 +21,16 @@ public class IdsManager
 
     public byte CreateId()
     {
+        if (_ids.Count >= _maxPlayers)
+        {
+            throw new Exception("[IdsManager] Too many players: " + _ids.Count + ">=" + _maxPlayers);
+        }
+
         for (byte i = 1; i <= _maxPlayers; i++)
         {
             if (!_ids.Contains(i))
             {
-                Debug.Log("[IdsManager] Generated id :" + i);
+                // Debug.Log("[IdsManager] Generated id :" + i);
                 _ids.Add(i);
                 return i;
             }
