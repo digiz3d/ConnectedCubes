@@ -5,32 +5,24 @@ using UnityEngine;
 
 public class NetworkManager : MonoBehaviour
 {
-    private bool IsServerRunning = false;
-    private Thread _serverThread = null;
-    private Server _server = null;
+    private Server _server;
 
+    private void Start()
+    {
+        _server = new Server();
+    }
+    
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.B))
         {
-            if (!IsServerRunning)
-            {
-                StartServer();
-            }
-            else
+            if(_server.IsRunning())
             {
                 StopServer();
             }
-        }
-    }
-
-    void FixedUpdate()
-    {
-        if (IsServerRunning)
-        {
-            if (_server.IsFinished())
+            else
             {
-                IsServerRunning = false;
+                StartServer();
             }
         }
     }
@@ -38,10 +30,9 @@ public class NetworkManager : MonoBehaviour
     private void StartServer()
     {
         Debug.Log("[SERVER] Starting server.");
-        IsServerRunning = true;
-        _server = new Server();
+        
         ThreadStart threadStart = new ThreadStart(_server.Process);
-        _serverThread = new Thread(threadStart);
+        Thread _serverThread = new Thread(threadStart);
         _serverThread.Start();
     }
 
