@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class NetworkManager : MonoBehaviour
 {
-    private bool _serverThreadRunning = false;
+    private bool IsServerRunning = false;
     private Thread _serverThread = null;
     private Server _server = null;
 
@@ -13,7 +13,7 @@ public class NetworkManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.B))
         {
-            if (!_serverThreadRunning)
+            if (!IsServerRunning)
             {
                 StartServer();
             }
@@ -26,11 +26,11 @@ public class NetworkManager : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (_serverThreadRunning)
+        if (IsServerRunning)
         {
-            if (_server.isFinished())
+            if (_server.IsFinished())
             {
-                _serverThreadRunning = false;
+                IsServerRunning = false;
             }
         }
     }
@@ -38,7 +38,7 @@ public class NetworkManager : MonoBehaviour
     private void StartServer()
     {
         Debug.Log("[SERVER] Starting server.");
-        _serverThreadRunning = true;
+        IsServerRunning = true;
         _server = new Server();
         ThreadStart threadStart = new ThreadStart(_server.Process);
         _serverThread = new Thread(threadStart);

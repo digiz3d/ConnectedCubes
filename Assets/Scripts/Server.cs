@@ -26,7 +26,7 @@ public class Server
     {
         _needsToStop = true;
     }
-    public bool isFinished()
+    public bool IsFinished()
     {
         return _isFinished;
     }
