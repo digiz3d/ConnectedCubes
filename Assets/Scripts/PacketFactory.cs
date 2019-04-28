@@ -3,15 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class NetworkPacketDestructor
+public static class PacketFactory
 {
     public static Packet GetPacket(byte[] buffer)
     {
-        switch ((NetworkPacketType)buffer[0])
+        switch ((PacketType)buffer[0])
         {
-            case NetworkPacketType.MOVE:
+            case PacketType.MOVE:
                 return GetMovePacket(ref buffer);
-            case NetworkPacketType.TEST:
+            case PacketType.TEST:
                 return GetTestPacket(ref buffer);
         }
         return null;
@@ -32,6 +32,9 @@ public static class NetworkPacketDestructor
         return new Vector3(GetFloat(ref buffer), GetFloat(ref buffer), GetFloat(ref buffer));
     }
 
+    /*
+     * technical methods
+     */
     public static ushort GetUShort(ref byte[] buffer)
     {
         ushort ret = (ushort)BitConverter.ToInt16(buffer, 0);
@@ -89,6 +92,11 @@ public class Packet
     {
         this.header = header;
     }
+
+    public NetworkPacket ToNetworkPacket()
+    {
+        return new NetworkPacket(header.type, header.sender);
+    }
 }
 
 public class MovePacket : Packet
@@ -101,7 +109,13 @@ public class MovePacket : Packet
         this.position = position;
         this.rotation = rotation;
     }
+
+    public NetworkPacket ToNetworkPacket(Vector3 position, Vector3 rotation)
+    {
+        return ToNetworkPacket().Add(position).Add(rotation);
+    }
 }
+
 public class TestPacket : Packet
 {
     public float testValue;
@@ -109,5 +123,10 @@ public class TestPacket : Packet
     public TestPacket(PacketHeader header, float testValue) : base(header)
     {
         this.testValue = testValue;
+    }
+
+    public NetworkPacket ToNetworkPacket(float testValue)
+    {
+        return ToNetworkPacket().Add(testValue);
     }
 }

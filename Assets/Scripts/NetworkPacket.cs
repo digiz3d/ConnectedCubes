@@ -67,4 +67,9 @@ public class NetworkPacket
     {
         return _length;
     }
+
+    public Packet ToPacket()
+    {
+        return PacketFactory.GetPacket(_bytes);
+    }
 }

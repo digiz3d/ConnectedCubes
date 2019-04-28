@@ -51,15 +51,15 @@ public class Client
                 dataBuffer = new byte[packetLength - NetworkPacket.HEADER_SIZE];
                 networkStream.Read(dataBuffer, 0, packetLength - NetworkPacket.HEADER_SIZE);
                 NetworkPacket p = NetworkPacketFactory.CreateFromBytes(headerBuffer, dataBuffer);
-                Packet packet = NetworkPacketDestructor.GetPacket(p.GetBytes());
-                switch ((NetworkPacketType)packet.header.type)
+                Packet packet = p.ToPacket();
+                switch ((PacketType)packet.header.type)
                 {
-                    case NetworkPacketType.MOVE:
+                    case PacketType.MOVE:
                         MovePacket mv = (MovePacket)packet;
                         Debug.Log("position = " + mv.position + ", rotation = " + mv.rotation);
                         break;
 
-                    case NetworkPacketType.TEST:
+                    case PacketType.TEST:
                         TestPacket test = (TestPacket)packet;
                         Debug.Log("test packet ok");
                         break;

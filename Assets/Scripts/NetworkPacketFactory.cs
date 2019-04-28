@@ -14,19 +14,19 @@ public static class NetworkPacketFactory
 
     public static NetworkPacket CreateMovePacket(byte sender, Vector3 pos, Vector3 rot)
     {
-        return new NetworkPacket((byte)NetworkPacketType.MOVE, sender)
+        return new NetworkPacket((byte)PacketType.MOVE, sender)
             .Add(pos)
             .Add(rot);
     }
 
     public static NetworkPacket CreateTestPacket(byte sender, float f)
     {
-        return new NetworkPacket((byte)NetworkPacketType.TEST, sender)
+        return new NetworkPacket((byte)PacketType.TEST, sender)
             .Add(f);
     }
 }
 
-public enum NetworkPacketType : byte
+public enum PacketType : byte
 {
     GIVE_ID,
     TEST,
