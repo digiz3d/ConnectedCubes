@@ -5,24 +5,34 @@ public class NetworkPacket
 {
     public const ushort HEADER_SIZE = 4;
 
-    private byte[] _data = new byte[HEADER_SIZE];
-    private ushort _actualLength = HEADER_SIZE;
+    private byte[] _bytes = new byte[HEADER_SIZE];
+    private ushort _length = HEADER_SIZE;
 
-    public NetworkPacket(byte[] bytes)
+    public NetworkPacket(byte[] header, byte[] data)
     {
-        Array.Resize(ref _data, bytes.Length);
-        Buffer.BlockCopy(bytes, 0, _data, 0, bytes.Length);
-        _actualLength = (byte)bytes.Length;
+        int newLength = header.Length + data.Length;
+
+        Array.Resize(ref _bytes, newLength);
+        Buffer.BlockCopy(header, 0, _bytes, 0, HEADER_SIZE);
+        Buffer.BlockCopy(data, 0, _bytes, HEADER_SIZE, data.Length - HEADER_SIZE);
+        _length = (ushort)newLength;
+    }
+
+    public NetworkPacket(byte[] data)
+    {
+        Array.Resize(ref _bytes, data.Length);
+        Buffer.BlockCopy(data, 0, _bytes, 0, data.Length);
+        _length = (ushort)data.Length;
     }
 
     public NetworkPacket(byte type, byte sender)
     {
-        _data[0] = type;
-        _data[1] = sender;
-        byte[] packetLength = BitConverter.GetBytes(_actualLength);
-        _data[2] = packetLength[0];
-        _data[3] = packetLength[1];
-        _actualLength = 4;
+        _bytes[0] = type;
+        _bytes[1] = sender;
+        byte[] packetLength = BitConverter.GetBytes(_length);
+        _bytes[2] = packetLength[0];
+        _bytes[3] = packetLength[1];
+        _length = 4;
     }
 
     public NetworkPacket Add(Vector3 v)
@@ -38,23 +48,23 @@ public class NetworkPacket
 
     private NetworkPacket Add(byte[] buffer)
     {
-        ushort newLength = (ushort)(_actualLength + buffer.Length);
-        Array.Resize(ref _data, newLength);
-        Buffer.BlockCopy(buffer, 0, _data, _actualLength, buffer.Length);
-        _actualLength = newLength;
+        ushort newLength = (ushort)(_length + buffer.Length);
+        Array.Resize(ref _bytes, newLength);
+        Buffer.BlockCopy(buffer, 0, _bytes, _length, buffer.Length);
+        _length = newLength;
         return this;
     }
 
     public byte[] GetBytes()
     {
         byte[] len = BitConverter.GetBytes(GetLength());
-        _data[2] = len[0];
-        _data[3] = len[1];
-        return _data;
+        _bytes[2] = len[0];
+        _bytes[3] = len[1];
+        return _bytes;
     }
 
     public ushort GetLength()
     {
-        return _actualLength;
+        return _length;
     }
 }

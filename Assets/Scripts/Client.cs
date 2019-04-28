@@ -50,7 +50,25 @@ public class Client
                 ushort packetLength = BitConverter.ToUInt16(headerBuffer, 2);
                 dataBuffer = new byte[packetLength - NetworkPacket.HEADER_SIZE];
                 networkStream.Read(dataBuffer, 0, packetLength - NetworkPacket.HEADER_SIZE);
-                Debug.Log("[CLIENTTHREAD] The packet payload is : " + dataBuffer.ToString() + " (" + dataBuffer.Length + ")");
+                NetworkPacket p = NetworkPacketFactory.CreateFromBytes(headerBuffer, dataBuffer);
+                Packet packet = NetworkPacketDestructor.GetPacket(p.GetBytes());
+                switch ((NetworkPacketType)packet.header.type)
+                {
+                    case NetworkPacketType.MOVE:
+                        MovePacket mv = (MovePacket)packet;
+                        Debug.Log("position = " + mv.position + ", rotation = " + mv.rotation);
+                        break;
+
+                    case NetworkPacketType.TEST:
+                        TestPacket test = (TestPacket)packet;
+                        Debug.Log("test packet ok");
+                        break;
+
+                    default:
+                        Debug.Log("empty packet received");
+                        break;
+                }
+                Debug.Log(packet);
             }
 
             if (networkStream.CanWrite && packetsQueue.Count > 0)
@@ -90,6 +108,7 @@ public class Client
 
     public void SendMovePacket(Vector3 pos, Vector3 rot)
     {
+        Debug.Log("[CLIENTTHREAD] sending pos=" + pos + ", rot=" + rot);
         packetsQueue.Enqueue(NetworkPacketFactory.CreateMovePacket(69, pos, rot));
     }
 }
