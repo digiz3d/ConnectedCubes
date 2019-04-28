@@ -3,16 +3,14 @@ using UnityEngine;
 
 public class NetworkPacket
 {
-    public const ushort MAX_SIZE = 1500;
     public const ushort HEADER_SIZE = 4;
 
-    private byte[] _buffer = new byte[MAX_SIZE];
     private byte[] _data = new byte[HEADER_SIZE];
     private ushort _actualLength = HEADER_SIZE;
 
     public NetworkPacket(byte[] bytes)
     {
-        _data = new byte[bytes.Length];
+        Array.Resize(ref _data, bytes.Length);
         Buffer.BlockCopy(bytes, 0, _data, 0, bytes.Length);
         _actualLength = (byte)bytes.Length;
     }
@@ -38,15 +36,11 @@ public class NetworkPacket
         return Add(buffer); ;
     }
 
-    private NetworkPacket Add(byte[] data)
+    private NetworkPacket Add(byte[] buffer)
     {
-        ushort newLength = (ushort)(_actualLength + data.Length);
-        if (newLength > MAX_SIZE)
-        {
-            throw new Exception("Paquet would be above max allowed size :" + newLength + "/" + MAX_SIZE);
-        }
+        ushort newLength = (ushort)(_actualLength + buffer.Length);
         Array.Resize(ref _data, newLength);
-        Buffer.BlockCopy(data, 0, _data, _actualLength, data.Length);
+        Buffer.BlockCopy(buffer, 0, _data, _actualLength, buffer.Length);
         _actualLength = newLength;
         return this;
     }
