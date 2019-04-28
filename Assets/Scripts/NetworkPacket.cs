@@ -58,7 +58,7 @@ public class NetworkPacket
         byte[] len = BitConverter.GetBytes(GetLength());
         _data[2] = len[0];
         _data[3] = len[1];
-        return this._data;
+        return _data;
     }
 
     public ushort GetLength()
