@@ -47,7 +47,7 @@ public class NetworkPacket
     private NetworkPacket Add(byte[] data)
     {
         ushort newLength = (ushort)(_actualLength + data.Length);
-        Array.Resize(ref _data, _actualLength + data.Length);
+        Array.Resize(ref _data, newLength);
         Buffer.BlockCopy(data, 0, _data, _actualLength, data.Length);
         _actualLength = newLength;
         return this;
