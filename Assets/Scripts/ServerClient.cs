@@ -44,7 +44,7 @@ public class ServerClient
     {
         if (_networkStream.CanWrite)
         {
-            byte[] buffer = packet.ToNetworkPacket().GetBytes();
+            byte[] buffer = packet.ToNetworkPacket().ToBytes();
             _networkStream.Write(buffer, 0, buffer.Length);
         }
     }

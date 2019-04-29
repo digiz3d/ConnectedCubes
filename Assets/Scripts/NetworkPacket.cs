@@ -47,11 +47,10 @@ public class NetworkPacket
         Array.Resize(ref _bytes, newLength);
         Buffer.BlockCopy(buffer, 0, _bytes, _length, buffer.Length);
         _length = newLength;
-        Debug.Log("length: " + _length);
         return this;
     }
 
-    public byte[] GetBytes()
+    public byte[] ToBytes()
     {
         byte[] len = BitConverter.GetBytes(GetLength());
         _bytes[2] = len[0];

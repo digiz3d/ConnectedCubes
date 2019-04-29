@@ -72,14 +72,8 @@ public class Client
             if (networkStream.CanWrite && packetsQueue.Count > 0)
             {
                 Packet packet = packetsQueue.Dequeue();
-                switch ((PacketType)packet.header.type)
-                {
-                    case PacketType.TEST:
-                        TestPacket testPacket = (TestPacket) packet;
-                        break;
-                }
                 NetworkPacket toSendPacket = packet.ToNetworkPacket();
-                byte[] bytes = toSendPacket.GetBytes();
+                byte[] bytes = toSendPacket.ToBytes();
                 networkStream.Write(bytes, 0, bytes.Length);
             }
 
