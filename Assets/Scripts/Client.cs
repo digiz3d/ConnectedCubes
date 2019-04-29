@@ -10,9 +10,7 @@ public class Client
 
     private bool _isConnected = false;
 
-    private Thread _clientProcessThread;
-    private TcpClient _tcpClient;
-    private Queue<NetworkPacket> packetsQueue;
+    private Queue<Packet> packetsQueue;
     private string _serverIp;
     private int _serverPort;
 
@@ -20,7 +18,7 @@ public class Client
     {
         _serverIp = serverIp;
         _serverPort = serverPort;
-        packetsQueue = new Queue<NetworkPacket>();
+        packetsQueue = new Queue<Packet>();
     }
 
     public void Process()
@@ -50,7 +48,7 @@ public class Client
                 ushort packetLength = BitConverter.ToUInt16(headerBuffer, 2);
                 dataBuffer = new byte[packetLength - NetworkPacket.HEADER_SIZE];
                 networkStream.Read(dataBuffer, 0, packetLength - NetworkPacket.HEADER_SIZE);
-                NetworkPacket p = NetworkPacketFactory.CreateFromBytes(headerBuffer, dataBuffer);
+                NetworkPacket p = new NetworkPacket(headerBuffer, dataBuffer);
                 Packet packet = p.ToPacket();
                 switch ((PacketType)packet.header.type)
                 {
@@ -73,8 +71,16 @@ public class Client
 
             if (networkStream.CanWrite && packetsQueue.Count > 0)
             {
-                NetworkPacket toSendPacket = packetsQueue.Dequeue();
-                networkStream.Write(toSendPacket.GetBytes(), 0, toSendPacket.GetLength());
+                Packet packet = packetsQueue.Dequeue();
+                switch ((PacketType)packet.header.type)
+                {
+                    case PacketType.TEST:
+                        TestPacket testPacket = (TestPacket) packet;
+                        break;
+                }
+                NetworkPacket toSendPacket = packet.ToNetworkPacket();
+                byte[] bytes = toSendPacket.GetBytes();
+                networkStream.Write(bytes, 0, bytes.Length);
             }
 
             Debug.Log("[CLIENTTHREAD] Processing...");
@@ -103,12 +109,12 @@ public class Client
 
     public void SendNetworkTestMessage()
     {
-        packetsQueue.Enqueue(NetworkPacketFactory.CreateTestPacket(69, 0f));
+        packetsQueue.Enqueue(new TestPacket(69, 0f));
     }
 
     public void SendMovePacket(Vector3 pos, Vector3 rot)
     {
         Debug.Log("[CLIENTTHREAD] sending pos=" + pos + ", rot=" + rot);
-        packetsQueue.Enqueue(NetworkPacketFactory.CreateMovePacket(69, pos, rot));
+        packetsQueue.Enqueue(new MovePacket(69, pos, rot));
     }
 }

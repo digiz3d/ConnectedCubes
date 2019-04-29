@@ -59,7 +59,6 @@ public class NetworkManager : MonoBehaviour
     private void StartServer()
     {
         Debug.Log("[SERVER] Starting server.");
-        
         Thread _serverThread = new Thread(_server.Process);
         _serverThread.Start();
     }
@@ -67,7 +66,6 @@ public class NetworkManager : MonoBehaviour
     private void StopServer()
     {
         Debug.Log("[SERVER] Stopping server.");
-
         _server.PleaseStop();
     }
 

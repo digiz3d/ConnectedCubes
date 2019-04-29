@@ -27,7 +27,7 @@ public class ServerClient
         return _networkStream;
     }
 
-    public void ReadNextPacket(Queue<NetworkPacket> packetQueue)
+    public void ReadNextPacket(Queue<Packet> packetQueue)
     {
         if (_networkStream.DataAvailable && _networkStream.CanRead)
         {
@@ -36,19 +36,15 @@ public class ServerClient
             ushort packetLength = BitConverter.ToUInt16(headerBuffer, 2);
             byte[] dataBuffer = new byte[packetLength - NetworkPacket.HEADER_SIZE];
             _networkStream.Read(dataBuffer, 0, packetLength - NetworkPacket.HEADER_SIZE);
-            
-            byte[] originalPacket = new byte[packetLength];
-            Buffer.BlockCopy(headerBuffer, 0, originalPacket, 0, NetworkPacket.HEADER_SIZE);
-            Buffer.BlockCopy(dataBuffer, 0, originalPacket, NetworkPacket.HEADER_SIZE, packetLength - NetworkPacket.HEADER_SIZE);
-            packetQueue.Enqueue(NetworkPacketFactory.CreateFromBytes(originalPacket));
+            packetQueue.Enqueue(new NetworkPacket(headerBuffer, dataBuffer).ToPacket());
         }
     }
 
-    public void SendPacket(NetworkPacket networkPacket)
+    public void SendPacket(Packet packet)
     {
         if (_networkStream.CanWrite)
         {
-            byte[] buffer = networkPacket.GetBytes();
+            byte[] buffer = packet.ToNetworkPacket().GetBytes();
             _networkStream.Write(buffer, 0, buffer.Length);
         }
     }

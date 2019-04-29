@@ -18,20 +18,15 @@ public class NetworkPacket
         _length = (ushort)newLength;
     }
 
-    public NetworkPacket(byte[] data)
-    {
-        Array.Resize(ref _bytes, data.Length);
-        Buffer.BlockCopy(data, 0, _bytes, 0, data.Length);
-        _length = (ushort)data.Length;
-    }
-
     public NetworkPacket(byte type, byte sender)
     {
         _bytes[0] = type;
         _bytes[1] = sender;
+        /*
         byte[] packetLength = BitConverter.GetBytes(_length);
         _bytes[2] = packetLength[0];
         _bytes[3] = packetLength[1];
+        */
         _length = 4;
     }
 
@@ -43,7 +38,7 @@ public class NetworkPacket
     public NetworkPacket Add(float f)
     {
         byte[] buffer = BitConverter.GetBytes(f);
-        return Add(buffer); ;
+        return Add(buffer);
     }
 
     private NetworkPacket Add(byte[] buffer)
@@ -52,6 +47,7 @@ public class NetworkPacket
         Array.Resize(ref _bytes, newLength);
         Buffer.BlockCopy(buffer, 0, _bytes, _length, buffer.Length);
         _length = newLength;
+        Debug.Log("length: " + _length);
         return this;
     }
 

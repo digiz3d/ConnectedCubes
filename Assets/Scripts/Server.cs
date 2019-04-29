@@ -12,11 +12,11 @@ public class Server
     private bool _isRunning = false;
     private IdsManager _idsManager;
 
-    private Queue<NetworkPacket> packetsQueue;
+    private Queue<Packet> _packetsQueue;
 
     public Server()
     {
-        packetsQueue = new Queue<NetworkPacket>();
+        _packetsQueue = new Queue<Packet>();
     }
 
     public void Process()
@@ -50,15 +50,15 @@ public class Server
             List<byte> ids = _idsManager.GetIds();
             foreach (byte id in ids)
             {
-                _clientListById[id].ReadNextPacket(packetsQueue);
+                _clientListById[id].ReadNextPacket(_packetsQueue);
             }
 
-            if (packetsQueue.Count > 0)
+            while (_packetsQueue.Count > 0)
             {
-                NetworkPacket networkPacket = packetsQueue.Dequeue();
+                Packet packet = _packetsQueue.Dequeue();
                 foreach (byte id in ids)
                 {
-                    _clientListById[id].SendPacket(networkPacket);
+                    _clientListById[id].SendPacket(packet);
                 }
             }
 
